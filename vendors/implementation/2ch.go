@@ -2,22 +2,37 @@ package implementation
 
 import (
 	"daemon/vendors"
+	"encoding/json"
 )
 
-type VendorImplementation struct {
-	request vendors.Request
+type vendor struct {
+	request *vendors.Request
 }
 
-func (vendor *VendorImplementation) FetchThreads(boardName string) map[int]string {
-	return map[int]string{}
+func (v *vendor) FetchThreads(boardName string) (response map[int]string, err error) {
+	jsonData, err := v.request.Exec(boardName + "/catalog_num.json")
+	if err != nil {
+		return
+	}
+
+	var jsonResponse struct {
+		Threads interface{} `json:"threads"`
+	}
+
+	if err = json.Unmarshal(jsonData, &jsonResponse); err != nil {
+		return
+	}
+	//spew.Dump(jsonResponse.Threads)
+
+	return
 }
 
-func (vendor *VendorImplementation) FetchVideos(threadId int) map[int]string {
-	return map[int]string{}
+func (v *vendor) FetchVideos(threadId int) (response map[int]string, err error) {
+	return
 }
 
 func Instance2ch() vendors.Interface {
-	return &VendorImplementation{
-		vendors.Request{Address: "http://example.com"},
+	return &vendor{
+		vendors.RequestFactory("http://2ch.hk"),
 	}
 }
