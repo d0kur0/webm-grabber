@@ -1,6 +1,6 @@
 package vendors
 
 type Interface interface {
-	FetchThreads(boardName string) map[int]string
-	FetchVideos(threadId int) map[int]string
+	FetchThreads(boardName string) (response map[int]string, err error)
+	FetchVideos(threadId int) (response map[int]string, err error)
 }
