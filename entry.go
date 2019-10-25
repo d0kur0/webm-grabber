@@ -3,6 +3,6 @@ package main
 import "daemon/vendors/implementation"
 
 func main() {
-	testVendor := implementation.TestVendorFactory()
+	testVendor := implementation.Instance2ch()
 	_ = testVendor
 }
