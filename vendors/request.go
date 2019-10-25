@@ -1,38 +1,42 @@
 package vendors
 
 import (
-	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"strings"
 )
 
 type Request struct {
-	Address string
+	address string
 }
 
 func (r *Request) BuildUri(uri string) string {
-	return r.Address + "/" + strings.Trim(uri, "/")
+	return r.address + "/" + strings.Trim(uri, "/")
 }
 
-func (r *Request) Exec(uri string) map[string]interface{} {
+func (r *Request) Exec(uri string) (body []byte, err error) {
 	uri = r.BuildUri(uri)
 
-	response, error := http.Get(uri)
-	if error != nil {
-		panic(error)
+	response, err := http.Get(uri)
+	if err != nil {
+		return
 	}
 
-	defer response.Body.Close()
-	body, error := ioutil.ReadAll(response.Body)
-	if error != nil {
-		panic(error)
+	defer func() {
+		er := response.Body.Close()
+		if er != nil {
+			// TODO: Catch error
+		}
+	}()
+
+	body, err = ioutil.ReadAll(response.Body)
+	if err != nil {
+		return
 	}
 
-	var jsonData map[string]interface{}
-	if error := json.Unmarshal(body, &jsonData); error != nil {
-		panic(error)
-	}
+	return
+}
 
-	return jsonData
+func RequestFactory(address string) *Request {
+	return &Request{address}
 }
