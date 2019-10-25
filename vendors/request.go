@@ -8,14 +8,14 @@ import (
 )
 
 type Request struct {
-	address string
+	Address string
 }
 
 func (r *Request) BuildUri(uri string) string {
-	return r.address + "/" + strings.Trim(uri, "/")
+	return r.Address + "/" + strings.Trim(uri, "/")
 }
 
-func (r *Request) Exec(uri string) byte {
+func (r *Request) Exec(uri string) map[string]interface{} {
 	uri = r.BuildUri(uri)
 
 	response, error := http.Get(uri)
@@ -29,9 +29,10 @@ func (r *Request) Exec(uri string) byte {
 		panic(error)
 	}
 
-	var jsonData = map[string]interface{}
-	if error := json.Unmarshal(response, jsonData); error != nil {
+	var jsonData map[string]interface{}
+	if error := json.Unmarshal(body, &jsonData); error != nil {
 		panic(error)
 	}
 
+	return jsonData
 }
