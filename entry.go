@@ -1,7 +1,8 @@
 package main
 
 import (
-	"daemon/vendors/implementation"
+	"daemon/vendors"
+	_2ch "daemon/vendors/2ch"
 	"fmt"
 )
 
@@ -12,11 +13,11 @@ func main() {
 		}
 	}()
 
-	testVendor := implementation.Instance2ch()
-	threads, err := testVendor.FetchThreads("b")
-	if err != nil {
-		panic(err)
+	instances := []vendors.Interface{
+		_2ch.Instance(),
 	}
 
-	_ = threads
+	for _, instance := range instances {
+		_ = instance
+	}
 }
