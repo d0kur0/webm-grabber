@@ -3,6 +3,8 @@ package implementation
 import (
 	"daemon/vendors"
 	"encoding/json"
+
+	"github.com/davecgh/go-spew/spew"
 )
 
 type vendor struct {
@@ -15,14 +17,12 @@ func (v *vendor) FetchThreads(boardName string) (response map[int]string, err er
 		return
 	}
 
-	var jsonResponse struct {
-		Threads interface{} `json:"threads"`
-	}
+	var result map[string]interface{}
+	json.Unmarshal(jsonData, &result)
 
-	if err = json.Unmarshal(jsonData, &jsonResponse); err != nil {
-		return
-	}
-	//spew.Dump(jsonResponse.Threads)
+	threads := result["threads"].(map[string]interface{})
+
+	spew.Dump(threads)
 
 	return
 }
