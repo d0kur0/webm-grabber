@@ -4,6 +4,7 @@ import (
 	"daemon/vendors"
 	_2ch "daemon/vendors/2ch"
 	"fmt"
+	"log"
 )
 
 func main() {
@@ -18,6 +19,12 @@ func main() {
 	}
 
 	for _, instance := range instances {
-		_ = instance
+		err, threads := instance.FetchThreads("b")
+		if err != nil {
+			log.Fatal(err)
+			continue
+		}
+
+		_ = threads
 	}
 }
