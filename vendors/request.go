@@ -25,7 +25,7 @@ func (r *Request) Exec(uri string) (body []byte, err error) {
 	defer func() {
 		er := response.Body.Close()
 		if er != nil {
-			// TODO: Catch error
+			panic("Response is not responding")
 		}
 	}()
 
