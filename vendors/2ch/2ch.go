@@ -1,6 +1,7 @@
 package _2ch
 
 import (
+	"daemon/structs"
 	"daemon/vendors"
 	"encoding/json"
 	"strconv"
@@ -39,7 +40,7 @@ func (v *vendor) FetchThreads(boardName string) (threads []int, err error) {
 	return
 }
 
-func (v *vendor) FetchVideos(boardName string, threadId int) (videos map[int]string, err error) {
+func (v *vendor) FetchVideos(boardName string, threadId int) (videos []structs.Video, err error) {
 	jsonData, err := v.request.Exec(boardName + "/res/" + string(threadId) + ".json")
 	if err != nil {
 		return
