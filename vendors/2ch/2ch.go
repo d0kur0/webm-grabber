@@ -39,7 +39,20 @@ func (v *vendor) FetchThreads(boardName string) (threads []int, err error) {
 	return
 }
 
-func (v *vendor) FetchVideos(threadId int) (response map[int]string, err error) {
+func (v *vendor) FetchVideos(boardName string, threadId int) (videos map[int]string, err error) {
+	jsonData, err := v.request.Exec(boardName + "/res/" + string(threadId) + ".json")
+	if err != nil {
+		return
+	}
+
+	var PostsStruct struct {
+	}
+
+	err = json.Unmarshal(jsonData, PostsStruct)
+	if err != nil {
+		return
+	}
+
 	return
 }
 
