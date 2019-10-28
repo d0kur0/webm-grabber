@@ -5,6 +5,8 @@ import (
 	"daemon/vendors"
 	_2ch "daemon/vendors/2ch"
 	"fmt"
+
+	"github.com/davecgh/go-spew/spew"
 )
 
 func main() {
@@ -39,13 +41,15 @@ func main() {
 						continue
 					}
 
-					responseBoard.Videos = append(responseBoard.Videos, videos)
+					responseBoard.Videos = append(responseBoard.Videos, videos...)
 				}
 			}
 		}
 
 		responseBoards = append(responseBoards, responseBoard)
 	}
+
+	spew.Dump(responseBoards)
 }
 
 func getGrabberSchema() (grabberSchema []structs.Board) {
