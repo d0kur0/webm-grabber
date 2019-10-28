@@ -1,30 +1,95 @@
 package main
 
 import (
+	"daemon/structs"
 	"daemon/vendors"
 	_2ch "daemon/vendors/2ch"
 	"fmt"
-	"log"
 )
 
 func main() {
 	defer func() {
-		if error := recover(); error != nil {
-			fmt.Printf("Panic: %s", error)
+		if err := recover(); err != nil {
+			fmt.Printf("Panic: %s", err)
 		}
 	}()
 
-	instances := []vendors.Interface{
-		_2ch.Instance(),
+	instances := map[string]vendors.Interface{
+		"2ch": _2ch.Instance(),
 	}
 
-	for _, instance := range instances {
-		err, threads := instance.FetchThreads("b")
-		if err != nil {
-			log.Fatal(err)
-			continue
+	var responseBoards []structs.ResponseBoards
+	for _, board := range getGrabberSchema() {
+		var responseBoard = structs.ResponseBoards{
+			BoardName:   board.Name,
+			Description: board.Description,
+			Videos:      []structs.Video{},
 		}
 
-		_ = threads
+		for _, sourceBoard := range board.SourceBoards {
+			if instance, exists := instances[sourceBoard.Vendor]; exists {
+				threads, err := instance.FetchThreads(sourceBoard.Board)
+				if err != nil {
+					continue
+				}
+
+				for _, thread := range threads {
+					videos, err := instance.FetchVideos(sourceBoard.Board, thread)
+					if err != nil {
+						continue
+					}
+
+					responseBoard.Videos = append(responseBoard.Videos, videos)
+				}
+			}
+		}
+
+		responseBoards = append(responseBoards, responseBoard)
 	}
+}
+
+func getGrabberSchema() (grabberSchema []structs.Board) {
+	grabberSchema = []structs.Board{
+		{
+			Name:        "b",
+			Description: "...",
+			SourceBoards: []structs.SourceBoard{
+				{"2ch", "b"},
+				{"4chan", "b"},
+			},
+		},
+		{
+			Name:        "a",
+			Description: "...",
+			SourceBoards: []structs.SourceBoard{
+				{"2ch", "a"},
+				{"4chan", "a"},
+				{"4chan", "c"},
+			},
+		},
+		{
+			Name:        "s",
+			Description: "...",
+			SourceBoards: []structs.SourceBoard{
+				{"2ch", "e"},
+				{"4chan", "s"},
+				{"4chan", "c"},
+			},
+		},
+		{
+			Name:        "c",
+			Description: "...",
+			SourceBoards: []structs.SourceBoard{
+				{"2ch", "h"},
+				{"2ch", "fur"},
+				{"4chan", "h"},
+				{"4chan", "u"},
+				{"4chan", "d"},
+				{"4chan", "e"},
+				{"4chan", "aco"},
+			},
+		},
+	}
+
+	return
 }
