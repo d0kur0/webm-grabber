@@ -16,7 +16,7 @@ func main() {
 	}()
 
 	instances := map[string]vendors.Interface{
-		//"2ch":   _2ch.Instance(),
+		"2ch":   _2ch.Instance(),
 		"4chan": _4chan.Instance(),
 	}
 
@@ -81,17 +81,6 @@ func getGrabberSchema() (grabberSchema []structs.Board) {
 			SourceBoards: []structs.SourceBoard{
 				{"4chan", "s"},
 				{"4chan", "c"},
-			},
-		},
-		{
-			Name:        "c",
-			Description: "...",
-			SourceBoards: []structs.SourceBoard{
-				{"4chan", "h"},
-				{"4chan", "u"},
-				{"4chan", "d"},
-				{"4chan", "e"},
-				{"4chan", "aco"},
 			},
 		},
 	}
