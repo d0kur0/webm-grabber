@@ -3,10 +3,9 @@ package main
 import (
 	"daemon/structs"
 	"daemon/vendors"
-	_2ch "daemon/vendors/2ch"
+	_4chan "daemon/vendors/4chan"
 	"fmt"
-
-	"github.com/davecgh/go-spew/spew"
+	"log"
 )
 
 func main() {
@@ -17,7 +16,8 @@ func main() {
 	}()
 
 	instances := map[string]vendors.Interface{
-		"2ch": _2ch.Instance(),
+		//"2ch":   _2ch.Instance(),
+		"4chan": _4chan.Instance(),
 	}
 
 	var responseBoards []structs.ResponseBoards
@@ -32,24 +32,28 @@ func main() {
 			if instance, exists := instances[sourceBoard.Vendor]; exists {
 				threads, err := instance.FetchThreads(sourceBoard.Board)
 				if err != nil {
+					log.Println("FetchThreads return error:", err, "BoardName:", sourceBoard.Board)
 					continue
 				}
 
 				for _, thread := range threads {
 					videos, err := instance.FetchVideos(sourceBoard.Board, thread)
 					if err != nil {
+						log.Println("FetchVideos return error:", err, "BoardName:", sourceBoard.Board, "ThreadId:", thread)
 						continue
 					}
 
 					responseBoard.Videos = append(responseBoard.Videos, videos...)
 				}
+			} else {
+				log.Println("A nonexistent vendor is called: ", sourceBoard.Vendor)
 			}
 		}
 
 		responseBoards = append(responseBoards, responseBoard)
 	}
 
-	spew.Dump(responseBoards)
+	//spew.Dump(responseBoards)
 }
 
 func getGrabberSchema() (grabberSchema []structs.Board) {
@@ -75,7 +79,6 @@ func getGrabberSchema() (grabberSchema []structs.Board) {
 			Name:        "s",
 			Description: "...",
 			SourceBoards: []structs.SourceBoard{
-				{"2ch", "e"},
 				{"4chan", "s"},
 				{"4chan", "c"},
 			},
@@ -84,8 +87,6 @@ func getGrabberSchema() (grabberSchema []structs.Board) {
 			Name:        "c",
 			Description: "...",
 			SourceBoards: []structs.SourceBoard{
-				{"2ch", "h"},
-				{"2ch", "fur"},
 				{"4chan", "h"},
 				{"4chan", "u"},
 				{"4chan", "d"},
