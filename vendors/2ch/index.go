@@ -13,6 +13,12 @@ type vendor struct {
 	request *vendors.Request
 }
 
+func Instance() vendors.Interface {
+	return &vendor{
+		vendors.RequestFactory("http://2ch.hk"),
+	}
+}
+
 func (v *vendor) FetchThreads(boardName string) (threads []int, err error) {
 	jsonData, err := v.request.Exec(boardName + "/threads.json")
 	if err != nil {
@@ -25,14 +31,13 @@ func (v *vendor) FetchThreads(boardName string) (threads []int, err error) {
 		}
 	}
 
-	err = json.Unmarshal(jsonData, &ThreadsStruct)
-	if err != nil {
+	if err = json.Unmarshal(jsonData, &ThreadsStruct); err != nil {
 		return
 	}
 
 	for _, thread := range ThreadsStruct.Threads {
-		threadId, err := strconv.ParseInt(thread.Id, 10, 64)
-		if err != nil {
+		threadId, er := strconv.ParseInt(thread.Id, 10, 64)
+		if er != nil {
 			continue
 		}
 
@@ -60,8 +65,7 @@ func (v *vendor) FetchVideos(boardName string, threadId int) (videos []structs.V
 		}
 	}
 
-	err = json.Unmarshal(jsonData, &PostsStruct)
-	if err != nil {
+	if err = json.Unmarshal(jsonData, &PostsStruct); err != nil {
 		return
 	}
 
@@ -71,7 +75,7 @@ func (v *vendor) FetchVideos(boardName string, threadId int) (videos []structs.V
 		}
 
 		for _, file := range post.Files {
-			if exists, _ := functions.InArray(filepath.Ext(file.Path), AllowFileTypes); exists {
+			if exists, _ := functions.InArray(filepath.Ext(file.Path), vendors.AllowFileTypes); exists {
 				videos = append(videos, structs.Video{
 					ThreadId: threadId,
 					Path:     file.Path,
@@ -83,10 +87,4 @@ func (v *vendor) FetchVideos(boardName string, threadId int) (videos []structs.V
 	}
 
 	return
-}
-
-func Instance() vendors.Interface {
-	return &vendor{
-		vendors.RequestFactory("http://2ch.hk"),
-	}
 }
