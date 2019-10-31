@@ -45,8 +45,8 @@ func (v *vendor) FetchVideos(boardName string, threadId int) (videos []structs.V
 
 	var PostsStruct struct {
 		Posts []struct {
-			Filename      string
-			FileExtension string
+			Filename      string `json:"filename"`
+			FileExtension string `json:"ext"`
 		}
 	}
 
@@ -59,9 +59,9 @@ func (v *vendor) FetchVideos(boardName string, threadId int) (videos []structs.V
 		if exists, _ := functions.InArray(post.FileExtension, vendors.AllowFileTypes); exists {
 			videos = append(videos, structs.Video{
 				ThreadId: threadId,
-				Path:     v.request.BuildUri("https://i.4cdn.org/" + boardName + "/" + post.Filename + post.FileExtension),
+				Path:     "https://i.4cdn.org/" + boardName + "/" + post.Filename + post.FileExtension,
 				Name:     post.Filename,
-				Preview:  v.request.BuildUri("https://i.4cdn.org/" + boardName + "/" + post.Filename + "s" + post.FileExtension),
+				Preview:  "https://i.4cdn.org/" + boardName + "/" + post.Filename + "s" + post.FileExtension,
 			})
 		}
 	}
