@@ -3,9 +3,12 @@ package main
 import (
 	"daemon/structs"
 	"daemon/vendors"
+	_2ch "daemon/vendors/2ch"
 	_4chan "daemon/vendors/4chan"
 	"fmt"
 	"log"
+
+	"github.com/davecgh/go-spew/spew"
 )
 
 func main() {
@@ -16,7 +19,7 @@ func main() {
 	}()
 
 	instances := map[string]vendors.Interface{
-		//"2ch":   _2ch.Instance(),
+		"2ch":   _2ch.Instance(),
 		"4chan": _4chan.Instance(),
 	}
 
@@ -37,13 +40,15 @@ func main() {
 				}
 
 				for _, thread := range threads {
-					videos, err := instance.FetchVideos(sourceBoard.Board, thread)
-					if err != nil {
-						log.Println("FetchVideos return error:", err, "BoardName:", sourceBoard.Board, "ThreadId:", thread)
-						continue
-					}
+					go func() {
+						videos, err := instance.FetchVideos(sourceBoard.Board, thread)
+						if err != nil {
+							log.Println("FetchVideos return error:", err, "BoardName:", sourceBoard.Board, "ThreadId:", thread)
+							return
+						}
 
-					responseBoard.Videos = append(responseBoard.Videos, videos...)
+						responseBoard.Videos = append(responseBoard.Videos, videos...)
+					}()
 				}
 			} else {
 				log.Println("A nonexistent vendor is called: ", sourceBoard.Vendor)
@@ -53,7 +58,7 @@ func main() {
 		responseBoards = append(responseBoards, responseBoard)
 	}
 
-	//spew.Dump(responseBoards)
+	spew.Dump(responseBoards)
 }
 
 func getGrabberSchema() (grabberSchema []structs.Board) {
