@@ -88,17 +88,6 @@ func getGrabberSchema() (grabberSchema []structs.Board) {
 				{"4chan", "c"},
 			},
 		},
-		{
-			Name:        "c",
-			Description: "...",
-			SourceBoards: []structs.SourceBoard{
-				{"4chan", "h"},
-				{"4chan", "u"},
-				{"4chan", "d"},
-				{"4chan", "e"},
-				{"4chan", "aco"},
-			},
-		},
 	}
 
 	return
