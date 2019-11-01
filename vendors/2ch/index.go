@@ -78,9 +78,9 @@ func (v *vendor) FetchVideos(boardName string, threadId int) (videos []structs.V
 			if exists, _ := functions.InArray(filepath.Ext(file.Path), vendors.AllowFileTypes); exists {
 				videos = append(videos, structs.Video{
 					ThreadId: threadId,
-					Path:     file.Path,
+					Path:     "https://2ch.hk" + file.Path,
 					Name:     file.Name,
-					Preview:  file.Preview,
+					Preview:  "https://2ch.hk" + file.Preview,
 				})
 			}
 		}
