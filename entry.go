@@ -7,8 +7,7 @@ import (
 	_4chan "daemon/vendors/4chan"
 	"fmt"
 	"log"
-
-	"github.com/davecgh/go-spew/spew"
+	"sync"
 )
 
 func main() {
@@ -18,47 +17,52 @@ func main() {
 		}
 	}()
 
-	instances := map[string]vendors.Interface{
+	vendors := map[string]vendors.Interface{
 		"2ch":   _2ch.Instance(),
 		"4chan": _4chan.Instance(),
 	}
 
-	var responseBoards []structs.ResponseBoards
-	for _, board := range getGrabberSchema() {
-		var responseBoard = structs.ResponseBoards{
-			BoardName:   board.Name,
-			Description: board.Description,
-			Videos:      []structs.Video{},
-		}
+	//var responseBoards []structs.ResponseBoards
+	var waitGroup sync.WaitGroup
 
-		for _, sourceBoard := range board.SourceBoards {
-			if instance, exists := instances[sourceBoard.Vendor]; exists {
-				threads, err := instance.FetchThreads(sourceBoard.Board)
-				if err != nil {
-					log.Println("FetchThreads return error:", err, "BoardName:", sourceBoard.Board)
-					continue
-				}
+	var queueThreads = make(chan []int, 1)
+	var queueVideos = make(chan []structs.Video, 1)
 
-				for _, thread := range threads {
-					go func() {
-						videos, err := instance.FetchVideos(sourceBoard.Board, thread)
-						if err != nil {
-							log.Println("FetchVideos return error:", err, "BoardName:", sourceBoard.Board, "ThreadId:", thread)
-							return
-						}
-
-						responseBoard.Videos = append(responseBoard.Videos, videos...)
-					}()
-				}
-			} else {
-				log.Println("A nonexistent vendor is called: ", sourceBoard.Vendor)
+	waitGroup.Add(1)
+	for _, boardStruct := range getGrabberSchema() {
+		for _, sourceBoard := range boardStruct.SourceBoards {
+			if desiredVendor, vendorExists := vendors[sourceBoard.Vendor]; vendorExists {
+				go func() { queueThreads <- asyncFetchThreads(desiredVendor, sourceBoard.Board) }()
+				go func() {
+					for threadId := range queueThreads {
+						queueVideos = append(queueVideos)
+					}
+				}()
 			}
 		}
-
-		responseBoards = append(responseBoards, responseBoard)
 	}
 
-	spew.Dump(responseBoards)
+	waitGroup.Wait()
+}
+
+func asyncFetchThreads(vendor vendors.Interface, boardName string) (threadsList []int) {
+	threadsList, threadsError := vendor.FetchThreads(boardName)
+	if threadsError != nil {
+		log.Println("Error (FetchThreads): ", "BoardName: ", boardName)
+		return
+	}
+
+	return
+}
+
+func asyncFetchVideos(vendor vendors.Interface, boardName string, threadId int) (videosList []structs.Video) {
+	videosList, videosError := vendor.FetchVideos(boardName, threadId)
+	if videosError != nil {
+		log.Println("Error (FetchVideos): ", "BoardName: ", boardName, "ThreadId:", threadId)
+		return
+	}
+
+	return
 }
 
 func getGrabberSchema() (grabberSchema []structs.Board) {
