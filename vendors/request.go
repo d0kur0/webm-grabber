@@ -3,14 +3,12 @@ package vendors
 import (
 	"errors"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strings"
 )
 
 type Request struct {
 	address string
-	counter int
 }
 
 func (r *Request) BuildUri(uri string) string {
@@ -24,10 +22,6 @@ func (r *Request) Exec(uri string) (body []byte, err error) {
 	if err != nil {
 		return
 	}
-
-	r.counter = r.counter + 1
-	log.Println("REQUEST NUMBER:", r.counter)
-	log.Println("Exec:", uri)
 
 	if response.StatusCode < 200 || response.StatusCode > 299 {
 		err = errors.New("HTTP Response Status out of range 2xx")
@@ -50,5 +44,5 @@ func (r *Request) Exec(uri string) (body []byte, err error) {
 }
 
 func RequestFactory(address string) *Request {
-	return &Request{address, 0}
+	return &Request{address}
 }
