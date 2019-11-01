@@ -1,40 +1,60 @@
 package main
 
-import (
-	"sync"
+type ThreadChannelMessage struct {
+	ThreadId  int
+	BoardName string
+	Vendor    string
+}
 
-	"github.com/davecgh/go-spew/spew"
-)
+type File struct {
+	Name string
+	Path string
+}
 
-type Video int
+type Vendor struct {
+	Name string
+}
+
+func (vendor *Vendor) FetchFiles (boardName string, threadId int) (files []File) {
+	for i := 0; i <= 100; i++ {
+
+	}
+}
+
+var vendors = map[string][]Vendor{
+	"2ch": { Vendor{"2ch.hk"} },
+}
 
 func main() {
-	var videos []Video
-	var waitGroup sync.WaitGroup
-	var queue = make(chan []Video, 1)
+	var threadsChannel = make(chan []ThreadChannelMessage)
+	var filesChannel   = make(chan []File)
 
-	waitGroup.Add(1)
-	go func() { queue <- asyncThreads() }()
+	// Getting threads
+	go asyncThreads(threadsChannel)
 
-	go func() {
-		for video := range queue {
-			videos = append(videos, video...)
-			waitGroup.Done()
+	// Catch new threads in channel
+	go func (threadsChannel chan) {
+
+		for {
+			newThreadId := <- threadsChannel
+			go asyncVideos(newThreadId, filesChannel)
 		}
-	}()
 
-	waitGroup.Wait()
-	spew.Dump(videos)
+	}(threadsChannel)
 }
 
-func asyncThreads() (videos []Video) {
-	for i := 0; i < 100; i++ {
-		videos = append(videos, Video(i))
+func asyncThreads(threadChannel chan) {
+	for i := 0; i <= 100; i++ {
+		threadChannel <- ThreadChannelMessage{
+			ThreadId:	 i,
+			BoardName: 	"b",
+			Vendor: 	"2ch",
+		}
 	}
-
-	return
 }
 
-func asyncVideos() {
-
+func asyncVideos(thread ThreadChannelMessage, filesChannel chan) {
+	if desiredVendor, vendorExists := vendors[thread.Vendor]; vendorExists {
+		filesChannel <- desiredVendor.FetchFiles(thread.BoardName, thread.ThreadId)
+	}
 }
