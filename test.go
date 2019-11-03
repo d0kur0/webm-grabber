@@ -1,60 +1,35 @@
 package main
 
-type ThreadChannelMessage struct {
-	ThreadId  int
-	BoardName string
-	Vendor    string
-}
+import (
+	"daemon/vendors"
+	_2ch "daemon/vendors/2ch"
+	"log"
+)
 
-type File struct {
-	Name string
-	Path string
-}
-
-type Vendor struct {
-	Name string
-}
-
-func (vendor *Vendor) FetchFiles (boardName string, threadId int) (files []File) {
-	for i := 0; i <= 100; i++ {
-
-	}
-}
-
-var vendors = map[string][]Vendor{
-	"2ch": { Vendor{"2ch.hk"} },
+var vendorInstances = map[string]vendors.Interface{
+	"2ch": _2ch.Instance(),
+	//"4chan": _4chan.Instance(),
 }
 
 func main() {
-	var threadsChannel = make(chan []ThreadChannelMessage)
-	var filesChannel   = make(chan []File)
+	for _, localBoard := range GrabberSchema {
+		for _, sourceBoard := range localBoard.SourceBoards {
+			desiredVendor, vendorExists := vendorInstances[sourceBoard.Vendor]
+			if !vendorExists {
+				log.Println("Not found vendor", sourceBoard.Vendor)
+				continue
+			}
 
-	// Getting threads
-	go asyncThreads(threadsChannel)
+			threads, fetchThreadsErr := desiredVendor.FetchThreads(sourceBoard.Board)
+			if fetchThreadsErr != nil {
+				log.Println("Error FetchThreads:", fetchThreadsErr)
+				continue
+			}
 
-	// Catch new threads in channel
-	go func (threadsChannel chan) {
-
-		for {
-			newThreadId := <- threadsChannel
-			go asyncVideos(newThreadId, filesChannel)
+			for _, threadId := range threads {
+				// Async fetching Files
+				_ = threadId
+			}
 		}
-
-	}(threadsChannel)
-}
-
-func asyncThreads(threadChannel chan) {
-	for i := 0; i <= 100; i++ {
-		threadChannel <- ThreadChannelMessage{
-			ThreadId:	 i,
-			BoardName: 	"b",
-			Vendor: 	"2ch",
-		}
-	}
-}
-
-func asyncVideos(thread ThreadChannelMessage, filesChannel chan) {
-	if desiredVendor, vendorExists := vendors[thread.Vendor]; vendorExists {
-		filesChannel <- desiredVendor.FetchFiles(thread.BoardName, thread.ThreadId)
 	}
 }
