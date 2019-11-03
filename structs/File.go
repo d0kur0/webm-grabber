@@ -1,6 +1,6 @@
 package structs
 
-type Video struct {
+type File struct {
 	ThreadId int
 	Path     string
 	Name     string
