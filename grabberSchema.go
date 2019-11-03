@@ -5,7 +5,7 @@ import "daemon/structs"
 var GrabberSchema = []structs.Board{
 	{
 		Name:        "b",
-		Description: "Bred",
+		Description: "...",
 		SourceBoards: []structs.SourceBoard{
 			{"2ch", "b"},
 			{"4chan", "b"},
@@ -13,7 +13,7 @@ var GrabberSchema = []structs.Board{
 	},
 	{
 		Name:        "a",
-		Description: "Anime",
+		Description: "...",
 		SourceBoards: []structs.SourceBoard{
 			{"2ch", "a"},
 			{"4chan", "a"},
@@ -22,7 +22,7 @@ var GrabberSchema = []structs.Board{
 	},
 	{
 		Name:        "s",
-		Description: "Sexuality",
+		Description: "...",
 		SourceBoards: []structs.SourceBoard{
 			{"4chan", "s"},
 			{"4chan", "c"},
