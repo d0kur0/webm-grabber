@@ -1,9 +1,13 @@
 package main
 
 import (
+	"daemon/structs"
 	"daemon/vendors"
 	_2ch "daemon/vendors/2ch"
 	"log"
+	"sync"
+
+	"github.com/davecgh/go-spew/spew"
 )
 
 var vendorInstances = map[string]vendors.Interface{
@@ -12,6 +16,9 @@ var vendorInstances = map[string]vendors.Interface{
 }
 
 func main() {
+	var filesChannel = make(chan structs.FileChannelMessage)
+	var waitGroup sync.WaitGroup
+
 	for _, localBoard := range GrabberSchema {
 		for _, sourceBoard := range localBoard.SourceBoards {
 			desiredVendor, vendorExists := vendorInstances[sourceBoard.Vendor]
@@ -27,9 +34,26 @@ func main() {
 			}
 
 			for _, threadId := range threads {
-				// Async fetching Files
-				_ = threadId
+				waitGroup.Add(1)
+
+				go func() {
+					defer waitGroup.Done()
+
+					threadFiles, fetchFilesErr := desiredVendor.FetchFiles(sourceBoard.Board, threadId)
+					if fetchFilesErr != nil {
+						log.Println("Error fetchFiles:", fetchFilesErr)
+						return
+					}
+
+					filesChannel <- structs.FileChannelMessage{
+						LocalBoard: localBoard.Name,
+						Files:      threadFiles,
+					}
+				}()
 			}
 		}
 	}
+
+	waitGroup.Wait()
+	spew.Dump(filesChannel)
 }
