@@ -4,7 +4,6 @@ import (
 	"daemon/structs"
 	"daemon/vendors"
 	_2ch "daemon/vendors/2ch"
-	_4chan "daemon/vendors/4chan"
 	"fmt"
 	"log"
 	"sync"
@@ -18,8 +17,8 @@ func main() {
 	}()
 
 	vendors := map[string]vendors.Interface{
-		"2ch":   _2ch.Instance(),
-		"4chan": _4chan.Instance(),
+		"2ch": _2ch.Instance(),
+		//"4chan": _4chan.Instance(),
 	}
 
 	//var responseBoards []structs.ResponseBoards
@@ -60,38 +59,6 @@ func asyncFetchVideos(vendor vendors.Interface, boardName string, threadId int) 
 	if videosError != nil {
 		log.Println("Error (FetchVideos): ", "BoardName: ", boardName, "ThreadId:", threadId)
 		return
-	}
-
-	return
-}
-
-func getGrabberSchema() (grabberSchema []structs.Board) {
-	grabberSchema = []structs.Board{
-		{
-			Name:        "b",
-			Description: "...",
-			SourceBoards: []structs.SourceBoard{
-				{"2ch", "b"},
-				{"4chan", "b"},
-			},
-		},
-		{
-			Name:        "a",
-			Description: "...",
-			SourceBoards: []structs.SourceBoard{
-				{"2ch", "a"},
-				{"4chan", "a"},
-				{"4chan", "c"},
-			},
-		},
-		{
-			Name:        "s",
-			Description: "...",
-			SourceBoards: []structs.SourceBoard{
-				{"4chan", "s"},
-				{"4chan", "c"},
-			},
-		},
 	}
 
 	return
