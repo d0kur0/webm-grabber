@@ -19,8 +19,8 @@ func Instance() vendors.Interface {
 	}
 }
 
-func (v *vendor) FetchThreads(boardName string) (threads []int, err error) {
-	jsonData, err := v.request.Exec(boardName + "/threads.json")
+func (vendor *vendor) FetchThreads(board string) (threads []int, err error) {
+	jsonData, err := vendor.request.Exec(board + "/threads.json")
 	if err != nil {
 		return
 	}
@@ -36,8 +36,8 @@ func (v *vendor) FetchThreads(boardName string) (threads []int, err error) {
 	}
 
 	for _, thread := range ThreadsStruct.Threads {
-		threadId, er := strconv.ParseInt(thread.Id, 10, 64)
-		if er != nil {
+		threadId, parseErr := strconv.ParseInt(thread.Id, 10, 64)
+		if parseErr != nil {
 			continue
 		}
 
@@ -47,8 +47,8 @@ func (v *vendor) FetchThreads(boardName string) (threads []int, err error) {
 	return
 }
 
-func (v *vendor) FetchVideos(boardName string, threadId int) (videos []structs.Video, err error) {
-	jsonData, err := v.request.Exec(boardName + "/res/" + strconv.Itoa(threadId) + ".json")
+func (vendor *vendor) FetchFiles(board string, threadId int) (files []structs.File, err error) {
+	jsonData, err := vendor.request.Exec(board + "/res/" + strconv.Itoa(threadId) + ".json")
 	if err != nil {
 		return
 	}
@@ -76,7 +76,7 @@ func (v *vendor) FetchVideos(boardName string, threadId int) (videos []structs.V
 
 		for _, file := range post.Files {
 			if exists, _ := functions.InArray(filepath.Ext(file.Path), vendors.AllowFileTypes); exists {
-				videos = append(videos, structs.Video{
+				files = append(files, structs.File{
 					ThreadId: threadId,
 					Path:     "https://2ch.hk" + file.Path,
 					Name:     file.Name,
