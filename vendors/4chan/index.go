@@ -12,8 +12,8 @@ type vendor struct {
 	request *vendors.Request
 }
 
-func (v *vendor) FetchThreads(boardName string) (threads []int, err error) {
-	jsonData, err := v.request.Exec(boardName + "/" + "threads.json")
+func (vendor *vendor) FetchThreads(board string) (threads []int, err error) {
+	jsonData, err := vendor.request.Exec(board + "/" + "threads.json")
 	if err != nil {
 		return
 	}
@@ -37,8 +37,8 @@ func (v *vendor) FetchThreads(boardName string) (threads []int, err error) {
 	return
 }
 
-func (v *vendor) FetchVideos(boardName string, threadId int) (videos []structs.Video, err error) {
-	jsonData, err := v.request.Exec(boardName + "/" + "thread" + "/" + strconv.Itoa(threadId) + ".json")
+func (vendor *vendor) FetchVideos(board string, threadId int) (files []structs.File, err error) {
+	jsonData, err := vendor.request.Exec(board + "/" + "thread" + "/" + strconv.Itoa(threadId) + ".json")
 	if err != nil {
 		return
 	}
@@ -57,7 +57,7 @@ func (v *vendor) FetchVideos(boardName string, threadId int) (videos []structs.V
 
 	for _, post := range PostsStruct.Posts {
 		if exists, _ := functions.InArray(post.FileExtension, vendors.AllowFileTypes); exists {
-			videos = append(videos, structs.Video{
+			files = append(videos, structs.Video{
 				ThreadId: threadId,
 				Path:     "https://i.4cdn.org/" + boardName + "/" + post.Filename + post.FileExtension,
 				Name:     post.Filename,
