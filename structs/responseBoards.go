@@ -1,7 +1,7 @@
 package structs
 
 type ResponseBoards struct {
-	BoardName   string
+	Board       string
 	Description string
-	Videos      []Video
+	Files       []File
 }
