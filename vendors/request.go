@@ -24,7 +24,7 @@ func (r *Request) Exec(uri string) (body []byte, err error) {
 	}
 
 	if response.StatusCode < 200 || response.StatusCode > 299 {
-		err = errors.New("HTTP Response Status out of range 2xx")
+		err = errors.New("HTTP Response Status out of range 2xx (" + uri + ")")
 		return
 	}
 
