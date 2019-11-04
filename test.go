@@ -19,7 +19,7 @@ func main() {
 	var filesChannel = make(chan structs.FileChannelMessage)
 	var waitGroup sync.WaitGroup
 
-	for _, localBoard := range GrabberSchema {
+	for _, localBoard := range getGrabberSchema() {
 		for _, sourceBoard := range localBoard.SourceBoards {
 			desiredVendor, vendorExists := vendorInstances[sourceBoard.Vendor]
 			if !vendorExists {
@@ -36,10 +36,10 @@ func main() {
 			for _, threadId := range threads {
 				waitGroup.Add(1)
 
-				go func() {
+				go func(vendor vendors.Interface, board string, threadId int) {
 					defer waitGroup.Done()
 
-					threadFiles, fetchFilesErr := desiredVendor.FetchFiles(sourceBoard.Board, threadId)
+					threadFiles, fetchFilesErr := vendor.FetchFiles(board, threadId)
 					if fetchFilesErr != nil {
 						log.Println("Error fetchFiles:", fetchFilesErr)
 						return
@@ -49,11 +49,46 @@ func main() {
 						LocalBoard: localBoard.Name,
 						Files:      threadFiles,
 					}
-				}()
+				}(desiredVendor, localBoard.Name, threadId)
 			}
 		}
 	}
 
+	for file := range filesChannel {
+		spew.Dump(file)
+	}
+
 	waitGroup.Wait()
-	spew.Dump(filesChannel)
+}
+
+func getGrabberSchema() (grabberSchema []structs.Board) {
+	grabberSchema = []structs.Board{
+		{
+			Name:        "b",
+			Description: "...",
+			SourceBoards: []structs.SourceBoard{
+				{"2ch", "b"},
+				{"4chan", "b"},
+			},
+		},
+		{
+			Name:        "a",
+			Description: "...",
+			SourceBoards: []structs.SourceBoard{
+				{"2ch", "a"},
+				{"4chan", "a"},
+				{"4chan", "c"},
+			},
+		},
+		{
+			Name:        "s",
+			Description: "...",
+			SourceBoards: []structs.SourceBoard{
+				{"4chan", "s"},
+				{"4chan", "c"},
+			},
+		},
+	}
+
+	return
 }
