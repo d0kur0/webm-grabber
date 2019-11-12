@@ -36,8 +36,8 @@ func main() {
 			for _, threadId := range threads {
 				waitGroup.Add(1)
 
-				go func(vendor vendors.Interface, board string, threadId int) {
-					defer waitGroup.Done()
+				go func(vendor vendors.Interface, board string, threadId int, wg *sync.WaitGroup) {
+					defer wg.Done()
 
 					threadFiles, fetchFilesErr := vendor.FetchFiles(board, threadId)
 					if fetchFilesErr != nil {
@@ -49,7 +49,7 @@ func main() {
 						LocalBoard: localBoard.Name,
 						Files:      threadFiles,
 					}
-				}(desiredVendor, localBoard.Name, threadId)
+				}(desiredVendor, localBoard.Name, threadId, &waitGroup)
 			}
 		}
 	}
@@ -59,6 +59,7 @@ func main() {
 	}
 
 	waitGroup.Wait()
+	log.Println("All operations end")
 }
 
 func getGrabberSchema() (grabberSchema []structs.Board) {
