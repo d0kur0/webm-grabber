@@ -4,22 +4,35 @@ import (
 	"daemon/structs"
 	"daemon/vendors"
 	_2ch "daemon/vendors/2ch"
+	_4chan "daemon/vendors/4chan"
 	"log"
 	"sync"
-
-	"github.com/davecgh/go-spew/spew"
 )
 
-var vendorInstances = map[string]vendors.Interface{
-	"2ch": _2ch.Instance(),
-	//"4chan": _4chan.Instance(),
-}
-
 func main() {
+	var vendorInstances = map[string]vendors.Interface{
+		"2ch":   _2ch.Instance(),
+		"4chan": _4chan.Instance(),
+	}
+
 	var filesChannel = make(chan structs.FileChannelMessage)
+	var response = make(map[string][]structs.File)
+	var grabberSchema = getGrabberSchema()
 	var waitGroup sync.WaitGroup
 
-	for _, localBoard := range getGrabberSchema() {
+	go func() {
+		for {
+			file := <-filesChannel
+
+			if _, exists := response[file.LocalBoard]; exists {
+				response[file.LocalBoard] = append(response[file.LocalBoard], file.Files...)
+			}
+		}
+	}()
+
+	for _, localBoard := range grabberSchema {
+		response[localBoard.Name] = nil
+
 		for _, sourceBoard := range localBoard.SourceBoards {
 			desiredVendor, vendorExists := vendorInstances[sourceBoard.Vendor]
 			if !vendorExists {
@@ -36,8 +49,8 @@ func main() {
 			for _, threadId := range threads {
 				waitGroup.Add(1)
 
-				go func(vendor vendors.Interface, board string, threadId int, wg *sync.WaitGroup) {
-					defer wg.Done()
+				go func(vendor vendors.Interface, board string, threadId int) {
+					defer waitGroup.Done()
 
 					threadFiles, fetchFilesErr := vendor.FetchFiles(board, threadId)
 					if fetchFilesErr != nil {
@@ -49,17 +62,20 @@ func main() {
 						LocalBoard: localBoard.Name,
 						Files:      threadFiles,
 					}
-				}(desiredVendor, localBoard.Name, threadId, &waitGroup)
+				}(desiredVendor, localBoard.Name, threadId)
 			}
 		}
 	}
 
-	for file := range filesChannel {
-		spew.Dump(file)
+	waitGroup.Wait()
+	log.Println("QUEUE IS EMPTY")
+	var counter = 0
+
+	for _, boards := range response {
+		counter += len(boards)
 	}
 
-	waitGroup.Wait()
-	log.Println("All operations end")
+	log.Println("Result files: ", counter)
 }
 
 func getGrabberSchema() (grabberSchema []structs.Board) {
