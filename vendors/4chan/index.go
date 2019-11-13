@@ -37,7 +37,7 @@ func (vendor *vendor) FetchThreads(board string) (threads []int, err error) {
 	return
 }
 
-func (vendor *vendor) FetchVideos(board string, threadId int) (files []structs.File, err error) {
+func (vendor *vendor) FetchFiles(board string, threadId int) (files []structs.File, err error) {
 	jsonData, err := vendor.request.Exec(board + "/" + "thread" + "/" + strconv.Itoa(threadId) + ".json")
 	if err != nil {
 		return
@@ -57,11 +57,11 @@ func (vendor *vendor) FetchVideos(board string, threadId int) (files []structs.F
 
 	for _, post := range PostsStruct.Posts {
 		if exists, _ := functions.InArray(post.FileExtension, vendors.AllowFileTypes); exists {
-			files = append(videos, structs.Video{
+			files = append(files, structs.File{
 				ThreadId: threadId,
-				Path:     "https://i.4cdn.org/" + boardName + "/" + post.Filename + post.FileExtension,
+				Path:     "https://i.4cdn.org/" + board + "/" + post.Filename + post.FileExtension,
 				Name:     post.Filename,
-				Preview:  "https://i.4cdn.org/" + boardName + "/" + post.Filename + "s" + post.FileExtension,
+				Preview:  "https://i.4cdn.org/" + board + "/" + post.Filename + "s" + post.FileExtension,
 			})
 		}
 	}
