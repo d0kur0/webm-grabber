@@ -9,16 +9,15 @@ import (
 	"sync"
 )
 
-func main() {
+func GetFiles(grabberSchema []structs.Board) map[string][]structs.File {
 	var vendorInstances = map[string]vendors.Interface{
 		"2ch":   _2ch.Instance(),
 		"4chan": _4chan.Instance(),
 	}
 
 	var filesChannel = make(chan structs.FileChannelMessage)
-	var response = make(map[string][]structs.File)
-	var grabberSchema = getGrabberSchema()
 	var waitGroup sync.WaitGroup
+	var response = make(map[string][]structs.File)
 
 	go func() {
 		for {
@@ -68,44 +67,5 @@ func main() {
 	}
 
 	waitGroup.Wait()
-	log.Println("QUEUE IS EMPTY")
-	var counter = 0
-
-	for _, boards := range response {
-		counter += len(boards)
-	}
-
-	log.Println("Result files: ", counter)
-}
-
-func getGrabberSchema() (grabberSchema []structs.Board) {
-	grabberSchema = []structs.Board{
-		{
-			Name:        "b",
-			Description: "...",
-			SourceBoards: []structs.SourceBoard{
-				{"2ch", "b"},
-				{"4chan", "b"},
-			},
-		},
-		{
-			Name:        "a",
-			Description: "...",
-			SourceBoards: []structs.SourceBoard{
-				{"2ch", "a"},
-				{"4chan", "a"},
-				{"4chan", "c"},
-			},
-		},
-		{
-			Name:        "s",
-			Description: "...",
-			SourceBoards: []structs.SourceBoard{
-				{"4chan", "s"},
-				{"4chan", "c"},
-			},
-		},
-	}
-
-	return
+	return response
 }
