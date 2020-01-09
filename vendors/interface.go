@@ -1,8 +1,8 @@
 package vendors
 
-import "daemon/structs"
+import "daemon/types"
 
 type Interface interface {
 	FetchThreads(board string) (threads []int, err error)
-	FetchFiles(board string, threadId int) (files []structs.File, err error)
+	FetchFiles(board string, threadId int) (files []types.File, err error)
 }
