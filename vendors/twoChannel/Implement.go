@@ -1,4 +1,4 @@
-package _2ch
+package twoChannel
 
 import (
 	"daemon/types"
@@ -7,18 +7,20 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"path/filepath"
+	"sort"
 	"strconv"
 
 	"github.com/ztrue/tracerr"
 )
 
 type implement struct {
-	basedAddress        string
-	extensionsForFilter []string
+	basedAddress      string
+	allowedExtensions types.AllowedExtensions
 }
 
-func (vendor *implement) FetchThreads(board string) (threads []int, err error) {
-	response, err := http.Get(vendor.basedAddress + "/" + board + "/threads.json")
+func (vendor *implement) FetchThreads(board types.Board) (threads []types.Thread, err error) {
+	response, err := http.Get(vendor.basedAddress + "/" + board.String() + "/threads.json")
 	if err != nil {
 		return
 	}
@@ -44,14 +46,17 @@ func (vendor *implement) FetchThreads(board string) (threads []int, err error) {
 			tracerr.PrintSourceColor(tracerr.Wrap(convertError))
 		}
 
-		threads = append(threads, threadId)
+		threads = append(threads, types.Thread{
+			ID:    threadId,
+			Board: board,
+		})
 	}
 
 	return
 }
 
-func (vendor *implement) FetchFiles(board string, threadId int) (files []types.File, err error) {
-	response, err := http.Get(vendor.basedAddress + "/" + board + "/" + strconv.Itoa(threadId) + ".json")
+func (vendor *implement) FetchFiles(thread types.Thread) (files []types.File, err error) {
+	response, err := http.Get(vendor.basedAddress + "/" + thread.Board.String() + "/" + thread.StringId() + ".json")
 	if err != nil {
 		return
 	}
@@ -77,13 +82,23 @@ func (vendor *implement) FetchFiles(board string, threadId int) (files []types.F
 		}
 
 		for _, file := range post.Files {
+			foundingIndex := sort.SearchStrings(vendor.allowedExtensions, filepath.Ext(file.Path))
+			if foundingIndex == 0 {
+				continue
+			}
 
+			files = append(files, types.File{
+				Name:     file.Name,
+				Path:     file.Path,
+				Preview:  file.Preview,
+				ThreadId: thread.ID,
+			})
 		}
 	}
 
 	return
 }
 
-func Make(extensionForFilter []string) vendors.Interface {
-	return &implement{"http://2ch.hk", extensionForFilter}
+func Make(allowedExtensions types.AllowedExtensions) vendors.Interface {
+	return &implement{"http://2ch.hk", allowedExtensions}
 }
