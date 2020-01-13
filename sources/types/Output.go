@@ -1,17 +1,30 @@
 package types
 
+type outputItem struct {
+	thread Thread
+	files  []File
+}
+
 type Output struct {
-	items map[string]struct {
-		Thread Thread
-		Files []File
+	vendors map[string]struct {
+		boards map[string]outputItem
 	}
 }
 
-func (output *Output) Push(message *ChannelMessage) {
-	output.items[message.VendorName] = struct {
-		Thread Thread
-		Files []File
-	}{Thread: message.Thread, Files: message.Files}
-}
+func (output *Output) Push(message ChannelMessage) {
+	if _, isVendorExists := output.vendors[message.VendorName]; !isVendorExists {
+		output.vendors[message.VendorName] = struct{ boards map[string]outputItem }{boards: nil}
+	}
 
-func (output *Output)
+	vendor := output.vendors[message.VendorName]
+	board := message.Thread.Board.String()
+
+	if _, isBoardExists := vendor.boards[board]; !isBoardExists {
+		vendor.boards[board] = outputItem{
+			thread: message.Thread,
+			files:  nil,
+		}
+	} else {
+		vendor.boards[board].files = nil
+	}
+}
