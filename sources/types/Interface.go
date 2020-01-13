@@ -1,4 +1,4 @@
-package sources
+package types
 
 type Interface interface {
 	FetchThreads(board Board) (threads []Thread, err error)

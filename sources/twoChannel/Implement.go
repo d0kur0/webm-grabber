@@ -1,14 +1,11 @@
 package twoChannel
 
 import (
-	"daemon/types"
-	"daemon/types/twoChannel"
-	"daemon/vendors"
+	"daemon/sources/types"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
-	"sort"
 	"strconv"
 
 	"github.com/ztrue/tracerr"
@@ -35,7 +32,7 @@ func (vendor *implement) FetchThreads(board types.Board) (threads []types.Thread
 		return
 	}
 
-	var responseThreads twoChannel.ResponseThreads
+	var responseThreads ResponseThreads
 	if err = json.Unmarshal(body, &responseThreads); err != nil {
 		return
 	}
@@ -56,8 +53,13 @@ func (vendor *implement) FetchThreads(board types.Board) (threads []types.Thread
 }
 
 func (vendor *implement) FetchFiles(thread types.Thread) (files []types.File, err error) {
-	response, err := http.Get(vendor.basedAddress + "/" + thread.Board.String() + "/" + thread.StringId() + ".json")
+	response, err := http.Get(vendor.basedAddress + "/" + thread.Board.String() + "/res/" + thread.StringId() + ".json")
 	if err != nil {
+		return
+	}
+
+	if response.StatusCode < 200 || response.StatusCode > 299 {
+		err = tracerr.New("Status code out of range 200-299")
 		return
 	}
 
@@ -71,7 +73,7 @@ func (vendor *implement) FetchFiles(thread types.Thread) (files []types.File, er
 		return
 	}
 
-	var responsePosts twoChannel.ResponsePosts
+	var responsePosts ResponsePosts
 	if err = json.Unmarshal(body, &responsePosts); err != nil {
 		return
 	}
@@ -82,8 +84,7 @@ func (vendor *implement) FetchFiles(thread types.Thread) (files []types.File, er
 		}
 
 		for _, file := range post.Files {
-			foundingIndex := sort.SearchStrings(vendor.allowedExtensions, filepath.Ext(file.Path))
-			if foundingIndex == 0 {
+			if !vendor.allowedExtensions.Contains(filepath.Ext(file.Path)) {
 				continue
 			}
 
@@ -103,6 +104,6 @@ func (vendor *implement) VendorName() string {
 	return "2ch"
 }
 
-func Make(allowedExtensions types.AllowedExtensions) vendors.Interface {
+func Make(allowedExtensions types.AllowedExtensions) types.Interface {
 	return &implement{"http://2ch.hk", allowedExtensions}
 }

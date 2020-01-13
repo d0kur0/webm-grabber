@@ -1,4 +1,4 @@
-package sources
+package types
 
 type GrabberSchema struct {
 	Vendor Interface
