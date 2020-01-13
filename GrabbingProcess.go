@@ -14,9 +14,7 @@ var waitGroup sync.WaitGroup
 var output types.Output
 
 func catchingFilesChannel() {
-	message := <-channel
-
-	output[message.VendorName].Files = message.Files
+	output.Push(<-channel)
 }
 
 func fetch(vendor types.Interface, thread types.Thread) {
@@ -52,11 +50,6 @@ func GrabberProcess() {
 
 	for _, schema := range grabberSchemas {
 		for _, board := range schema.Boards {
-			output[schema.Vendor.VendorName()] = struct {
-				Board types.Board
-				Files []types.File
-			}{Board: board, Files: nil}
-
 			threads, err := schema.Vendor.FetchThreads(board)
 			if err != nil {
 				tracerr.PrintSourceColor(tracerr.Wrap(err))
