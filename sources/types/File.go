@@ -1,4 +1,4 @@
-package types
+package sources
 
 type File struct {
 	Name     string

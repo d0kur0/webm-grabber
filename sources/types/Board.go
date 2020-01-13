@@ -1,4 +1,4 @@
-package types
+package sources
 
 type Board string
 

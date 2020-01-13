@@ -1,3 +1,3 @@
-package types
+package sources
 
 type AllowedExtensions []string
