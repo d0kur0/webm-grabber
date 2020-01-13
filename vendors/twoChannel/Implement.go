@@ -99,6 +99,10 @@ func (vendor *implement) FetchFiles(thread types.Thread) (files []types.File, er
 	return
 }
 
+func (vendor *implement) VendorName() string {
+	return "2ch"
+}
+
 func Make(allowedExtensions types.AllowedExtensions) vendors.Interface {
 	return &implement{"http://2ch.hk", allowedExtensions}
 }
