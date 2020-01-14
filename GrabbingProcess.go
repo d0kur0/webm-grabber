@@ -11,10 +11,11 @@ import (
 
 var channel = make(chan types.ChannelMessage)
 var waitGroup sync.WaitGroup
-var output types.Output
 
-func catchingFilesChannel() {
-	output.Push(<-channel)
+func catchingFilesChannel(output *types.Output) {
+	message := <-channel
+	log.Println(message)
+	output.Push(&message)
 }
 
 func fetch(vendor types.Interface, thread types.Thread) {
@@ -22,7 +23,8 @@ func fetch(vendor types.Interface, thread types.Thread) {
 
 	files, err := vendor.FetchFiles(thread)
 	if err != nil {
-		tracerr.PrintSourceColor(tracerr.Wrap(err))
+		tracerr.Print(tracerr.Wrap(err))
+		return
 	}
 
 	if len(files) == 0 {
@@ -46,7 +48,8 @@ func GrabberProcess() {
 		},
 	}
 
-	go catchingFilesChannel()
+	output := types.MakeOutput(grabberSchemas)
+	go catchingFilesChannel(&output)
 
 	for _, schema := range grabberSchemas {
 		for _, board := range schema.Boards {
