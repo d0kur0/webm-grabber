@@ -9,11 +9,11 @@ type outputThread struct {
 	files []File
 }
 
-type output struct {
+type Output struct {
 	vendors outputVendors
 }
 
-func (o *output) Push(message *ChannelMessage) {
+func (o *Output) Push(message *ChannelMessage) {
 	vendor := message.VendorName
 	board := message.Thread.Board.String()
 
@@ -23,8 +23,8 @@ func (o *output) Push(message *ChannelMessage) {
 	})
 }
 
-func MakeOutput(schemas []GrabberSchema) (o output) {
-	o = output{}
+func MakeOutput(schemas []GrabberSchema) (o Output) {
+	o = Output{}
 	o.vendors = make(outputVendors, len(schemas))
 
 	for _, schema := range schemas {
