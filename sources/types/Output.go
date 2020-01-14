@@ -1,30 +1,41 @@
 package types
 
-type outputItem struct {
-	thread Thread
-	files  []File
+type outputVendors map[string]outputBoards
+
+type outputBoards map[string][]outputThread
+
+type outputThread struct {
+	Id    int
+	files []File
 }
 
-type Output struct {
-	vendors map[string]struct {
-		boards map[string]outputItem
-	}
+type output struct {
+	vendors outputVendors
 }
 
-func (output *Output) Push(message ChannelMessage) {
-	if _, isVendorExists := output.vendors[message.VendorName]; !isVendorExists {
-		output.vendors[message.VendorName] = struct{ boards map[string]outputItem }{boards: nil}
-	}
-
-	vendor := output.vendors[message.VendorName]
+func (o *output) Push(message *ChannelMessage) {
+	vendor := message.VendorName
 	board := message.Thread.Board.String()
 
-	if _, isBoardExists := vendor.boards[board]; !isBoardExists {
-		vendor.boards[board] = outputItem{
-			thread: message.Thread,
-			files:  nil,
+	o.vendors[vendor][board] = append(o.vendors[vendor][board], outputThread{
+		Id:    message.Thread.ID,
+		files: message.Files,
+	})
+}
+
+func MakeOutput(schemas []GrabberSchema) (o output) {
+	o = output{}
+	o.vendors = make(outputVendors, len(schemas))
+
+	for _, schema := range schemas {
+		var boards = make(outputBoards, len(schema.Boards))
+
+		for _, board := range schema.Boards {
+			boards[board.String()] = []outputThread{}
 		}
-	} else {
-		vendor.boards[board].files = nil
+
+		o.vendors[schema.Vendor.VendorName()] = boards
 	}
+
+	return
 }
