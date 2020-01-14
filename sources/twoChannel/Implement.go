@@ -24,7 +24,9 @@ func (vendor *implement) FetchThreads(board types.Board) (threads []types.Thread
 
 	defer func() {
 		err = response.Body.Close()
-		tracerr.PrintSourceColor(tracerr.Wrap(err))
+		if err != nil {
+			tracerr.PrintSourceColor(tracerr.Wrap(err))
+		}
 	}()
 
 	body, err := ioutil.ReadAll(response.Body)
@@ -65,7 +67,9 @@ func (vendor *implement) FetchFiles(thread types.Thread) (files []types.File, er
 
 	defer func() {
 		err = response.Body.Close()
-		tracerr.PrintSourceColor(tracerr.Wrap(err))
+		if err != nil {
+			tracerr.PrintSourceColor(tracerr.Wrap(err))
+		}
 	}()
 
 	body, err := ioutil.ReadAll(response.Body)
