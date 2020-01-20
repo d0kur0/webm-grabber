@@ -1,8 +1,8 @@
-package structs
+package types
 
 type File struct {
-	ThreadId int
-	Path     string
 	Name     string
+	Path     string
 	Preview  string
+	ThreadId int
 }
