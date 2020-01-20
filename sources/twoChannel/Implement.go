@@ -94,8 +94,8 @@ func (vendor *implement) FetchFiles(thread types.Thread) (files []types.File, er
 
 			files = append(files, types.File{
 				Name:     file.Name,
-				Path:     file.Path,
-				Preview:  file.Preview,
+				Path:     vendor.basedAddress + "/" + file.Path,
+				Preview:  vendor.basedAddress + "/" + file.Preview,
 				ThreadId: thread.ID,
 			})
 		}
