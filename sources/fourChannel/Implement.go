@@ -3,9 +3,9 @@ package fourChannel
 import (
 	"daemon/sources/types"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
-	"net/url"
 
 	"github.com/ztrue/tracerr"
 )
@@ -85,8 +85,8 @@ func (vendor *implement) FetchFiles(thread types.Thread) (files []types.File, er
 
 		files = append(files, types.File{
 			Name:     post.Filename,
-			Path:     "https://i.4cdn.org/" + thread.Board.String() + "/" + url.QueryEscape(post.Filename) + post.FileExtension,
-			Preview:  "https://i.4cdn.org/" + thread.Board.String() + "/" + url.QueryEscape(post.Filename) + "s" + post.FileExtension,
+			Path:     "https://i.4cdn.org/" + thread.Board.String() + "/" + fmt.Sprint(post.FileId) + post.FileExtension,
+			Preview:  "https://i.4cdn.org/" + thread.Board.String() + "/" + fmt.Sprint(post.FileId) + "s" + post.FileExtension,
 			ThreadId: thread.ID,
 		})
 	}
