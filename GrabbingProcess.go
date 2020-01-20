@@ -1,10 +1,12 @@
 package main
 
 import (
+	"daemon/sources/fourChannel"
 	"daemon/sources/twoChannel"
 	"daemon/sources/types"
-	"log"
 	"sync"
+
+	"github.com/davecgh/go-spew/spew"
 
 	"github.com/ztrue/tracerr"
 )
@@ -13,9 +15,10 @@ var channel = make(chan types.ChannelMessage)
 var waitGroup sync.WaitGroup
 
 func catchingFilesChannel(output *types.Output) {
-	message := <-channel
-	log.Println(message)
-	output.Push(&message)
+	for {
+		message := <-channel
+		output.Push(&message)
+	}
 }
 
 func fetch(vendor types.Interface, thread types.Thread) {
@@ -38,12 +41,16 @@ func fetch(vendor types.Interface, thread types.Thread) {
 	}
 }
 
-func GrabberProcess() {
+func GrabberProcess() types.Output {
 	allowedExtensions := types.AllowedExtensions{".webm", ".mp4"}
 
 	grabberSchemas := []types.GrabberSchema{
 		{
 			twoChannel.Make(allowedExtensions),
+			[]types.Board{"b", "a"},
+		},
+		{
+			fourChannel.Make(allowedExtensions),
 			[]types.Board{"b"},
 		},
 	}
@@ -68,9 +75,11 @@ func GrabberProcess() {
 
 	waitGroup.Wait()
 
-	log.Print("All jobs done")
+	return output
 }
 
 func main() {
-	GrabberProcess()
+	files := GrabberProcess()
+
+	spew.Dump(files)
 }
