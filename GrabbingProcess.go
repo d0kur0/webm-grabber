@@ -23,7 +23,7 @@ func fetch(vendor types.Interface, thread types.Thread) {
 
 	files, err := vendor.FetchFiles(thread)
 	if err != nil {
-		tracerr.Print(tracerr.Wrap(err))
+		tracerr.PrintSourceColor(tracerr.Wrap(err))
 		return
 	}
 
