@@ -2,7 +2,8 @@ package webmGrabber
 
 import (
 	"sync"
-	"webmGrabber/sources/types"
+
+	"github.com/d0kur0/webm-grabber/sources/types"
 
 	"github.com/ztrue/tracerr"
 )

@@ -1,4 +1,4 @@
-module webmGrabber
+module github.com/d0kur0/webm-grabber
 
 go 1.13
 
