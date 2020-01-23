@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"strconv"
-	"webm-grabber/sources/types"
+	"webmGrabber/sources/types"
 
 	"github.com/ztrue/tracerr"
 )

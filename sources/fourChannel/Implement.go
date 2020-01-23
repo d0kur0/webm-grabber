@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"webm-grabber/sources/types"
+	"webmGrabber/sources/types"
 
 	"github.com/ztrue/tracerr"
 )
