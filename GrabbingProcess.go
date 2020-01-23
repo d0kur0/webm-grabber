@@ -1,12 +1,8 @@
 package main
 
 import (
-	"daemon/sources/fourChannel"
-	"daemon/sources/twoChannel"
 	"daemon/sources/types"
 	"sync"
-
-	"github.com/davecgh/go-spew/spew"
 
 	"github.com/ztrue/tracerr"
 )
@@ -41,20 +37,7 @@ func fetch(vendor types.Interface, thread types.Thread) {
 	}
 }
 
-func GrabberProcess() types.Output {
-	allowedExtensions := types.AllowedExtensions{".webm", ".mp4"}
-
-	grabberSchemas := []types.GrabberSchema{
-		{
-			twoChannel.Make(allowedExtensions),
-			[]types.Board{"b", "a"},
-		},
-		{
-			fourChannel.Make(allowedExtensions),
-			[]types.Board{"b"},
-		},
-	}
-
+func GrabberProcess(grabberSchemas []types.GrabberSchema) types.Output {
 	output := types.MakeOutput(grabberSchemas)
 	go catchingFilesChannel(&output)
 
@@ -76,10 +59,4 @@ func GrabberProcess() types.Output {
 	waitGroup.Wait()
 
 	return output
-}
-
-func main() {
-	files := GrabberProcess()
-
-	spew.Dump(files)
 }
