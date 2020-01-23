@@ -15,8 +15,8 @@ type implement struct {
 	allowedExtensions types.AllowedExtensions
 }
 
-func (vendor *implement) FetchThreads(board types.Board) (threads []types.Thread, err error) {
-	response, err := http.Get(vendor.basedAddress + "/" + board.String() + "/threads.json")
+func (vendor *implement) request(url string) (responseData []byte, err error) {
+	response, err := http.Get(url)
 	if err != nil {
 		return
 	}
@@ -28,13 +28,17 @@ func (vendor *implement) FetchThreads(board types.Board) (threads []types.Thread
 		}
 	}()
 
-	body, err := ioutil.ReadAll(response.Body)
+	return ioutil.ReadAll(response.Body)
+}
+
+func (vendor *implement) FetchThreads(board types.Board) (threads []types.Thread, err error) {
+	response, err := vendor.request(vendor.basedAddress + "/" + board.String() + "/threads.json")
 	if err != nil {
 		return
 	}
 
 	var responseThreads ResponseThreads
-	if err = json.Unmarshal(body, &responseThreads); err != nil {
+	if err = json.Unmarshal(response, &responseThreads); err != nil {
 		return
 	}
 
@@ -51,30 +55,13 @@ func (vendor *implement) FetchThreads(board types.Board) (threads []types.Thread
 }
 
 func (vendor *implement) FetchFiles(thread types.Thread) (files []types.File, err error) {
-	response, err := http.Get(vendor.basedAddress + "/" + thread.Board.String() + "/res/" + thread.StringId() + ".json")
-	if err != nil {
-		return
-	}
-
-	if response.StatusCode < 200 || response.StatusCode > 299 {
-		err = tracerr.New("Status code out of range 200-299")
-		return
-	}
-
-	defer func() {
-		err = response.Body.Close()
-		if err != nil {
-			tracerr.PrintSourceColor(tracerr.Wrap(err))
-		}
-	}()
-
-	body, err := ioutil.ReadAll(response.Body)
+	response, err := vendor.request(vendor.basedAddress + "/" + thread.Board.String() + "/res/" + thread.StringId() + ".json")
 	if err != nil {
 		return
 	}
 
 	var responsePosts ResponsePosts
-	if err = json.Unmarshal(body, &responsePosts); err != nil {
+	if err = json.Unmarshal(response, &responsePosts); err != nil {
 		return
 	}
 
@@ -86,7 +73,7 @@ func (vendor *implement) FetchFiles(thread types.Thread) (files []types.File, er
 		files = append(files, types.File{
 			Name:     post.Filename,
 			Path:     "https://i.4cdn.org/" + thread.Board.String() + "/" + fmt.Sprint(post.FileId) + post.FileExtension,
-			Preview:  "https://i.4cdn.org/" + thread.Board.String() + "/" + fmt.Sprint(post.FileId) + "s" + post.FileExtension,
+			Preview:  "https://i.4cdn.org/" + thread.Board.String() + "/" + fmt.Sprint(post.FileId) + "s.png",
 			ThreadId: thread.ID,
 		})
 	}
