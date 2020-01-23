@@ -10,14 +10,14 @@ type outputThread struct {
 }
 
 type Output struct {
-	vendors outputVendors
+	Vendors outputVendors
 }
 
 func (o *Output) Push(message *ChannelMessage) {
 	vendor := message.VendorName
 	board := message.Thread.Board.String()
 
-	o.vendors[vendor][board] = append(o.vendors[vendor][board], outputThread{
+	o.Vendors[vendor][board] = append(o.Vendors[vendor][board], outputThread{
 		Id:    message.Thread.ID,
 		files: message.Files,
 	})
@@ -25,7 +25,7 @@ func (o *Output) Push(message *ChannelMessage) {
 
 func MakeOutput(schemas []GrabberSchema) (o Output) {
 	o = Output{}
-	o.vendors = make(outputVendors, len(schemas))
+	o.Vendors = make(outputVendors, len(schemas))
 
 	for _, schema := range schemas {
 		var boards = make(outputBoards, len(schema.Boards))
@@ -34,7 +34,7 @@ func MakeOutput(schemas []GrabberSchema) (o Output) {
 			boards[board.String()] = []outputThread{}
 		}
 
-		o.vendors[schema.Vendor.VendorName()] = boards
+		o.Vendors[schema.Vendor.VendorName()] = boards
 	}
 
 	return
