@@ -1,12 +1,12 @@
 package twoChannel
 
 import (
-	"daemon/sources/types"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
 	"strconv"
+	"webm-grabber/sources/types"
 
 	"github.com/ztrue/tracerr"
 )

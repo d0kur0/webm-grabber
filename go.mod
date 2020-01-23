@@ -1,4 +1,4 @@
-module daemon
+module webm-grabber
 
 go 1.13
 

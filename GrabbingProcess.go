@@ -1,8 +1,8 @@
 package main
 
 import (
-	"daemon/sources/types"
 	"sync"
+	"webm-grabber/sources/types"
 
 	"github.com/ztrue/tracerr"
 )

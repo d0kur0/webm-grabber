@@ -1,11 +1,11 @@
 package fourChannel
 
 import (
-	"daemon/sources/types"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"webm-grabber/sources/types"
 
 	"github.com/ztrue/tracerr"
 )
