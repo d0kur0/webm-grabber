@@ -6,7 +6,7 @@ type outputBoards map[string][]outputThread
 
 type outputThread struct {
 	Id    int
-	files []File
+	Files []File
 }
 
 type Output struct {
@@ -19,7 +19,7 @@ func (o *Output) Push(message *ChannelMessage) {
 
 	o.Vendors[vendor][board] = append(o.Vendors[vendor][board], outputThread{
 		Id:    message.Thread.ID,
-		files: message.Files,
+		Files: message.Files,
 	})
 }
 
