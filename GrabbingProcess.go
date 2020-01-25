@@ -1,7 +1,11 @@
 package webmGrabber
 
 import (
+	"fmt"
+	"log"
 	"sync"
+
+	"github.com/pkg/errors"
 
 	"github.com/d0kur0/webm-grabber/sources/types"
 
@@ -23,7 +27,8 @@ func fetch(vendor types.Interface, thread types.Thread) {
 
 	files, err := vendor.FetchFiles(thread)
 	if err != nil {
-		tracerr.PrintSourceColor(tracerr.Wrap(err))
+		err = errors.Wrap(err, fmt.Sprintf("FetchFiles error, vendor: %s, thread: %d, board: %s", vendor.VendorName(), thread, thread.Board.String()))
+		log.Println(err)
 		return
 	}
 

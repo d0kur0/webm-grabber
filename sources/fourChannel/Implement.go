@@ -4,11 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 
-	"github.com/d0kur0/webm-grabber/sources/types"
+	"github.com/pkg/errors"
 
-	"github.com/ztrue/tracerr"
+	"github.com/d0kur0/webm-grabber/sources/types"
 )
 
 type implement struct {
@@ -25,9 +26,14 @@ func (vendor *implement) request(url string) (responseData []byte, err error) {
 	defer func() {
 		err = response.Body.Close()
 		if err != nil {
-			tracerr.PrintSourceColor(tracerr.Wrap(err))
+			log.Println(errors.Wrap(err, "Closing body error"))
 		}
 	}()
+
+	if response.StatusCode < 200 || response.StatusCode > 299 {
+		err = errors.New("Request returned code out of range 200-299, url:" + url)
+		return
+	}
 
 	return ioutil.ReadAll(response.Body)
 }
