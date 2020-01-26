@@ -8,8 +8,6 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/d0kur0/webm-grabber/sources/types"
-
-	"github.com/ztrue/tracerr"
 )
 
 var channel = make(chan types.ChannelMessage)
@@ -51,7 +49,8 @@ func GrabberProcess(grabberSchemas []types.GrabberSchema) types.Output {
 		for _, board := range schema.Boards {
 			threads, err := schema.Vendor.FetchThreads(board)
 			if err != nil {
-				tracerr.PrintSourceColor(tracerr.Wrap(err))
+				err = errors.Wrap(err, fmt.Sprintf("FetchThreads error: vendor %s, board: %s", schema.Vendor.VendorName(), board.String()))
+				log.Println(err)
 				continue
 			}
 
