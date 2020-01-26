@@ -25,7 +25,7 @@ func fetch(vendor types.Interface, thread types.Thread) {
 
 	files, err := vendor.FetchFiles(thread)
 	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("FetchFiles error, vendor: %s, thread: %d, board: %s", vendor.VendorName(), thread, thread.Board.String()))
+		err = errors.Wrap(err, fmt.Sprintf("FetchFiles error, vendor: %s, thread: %d, board: %s", vendor.VendorName(), thread.ID, thread.Board.String()))
 		log.Println(err)
 		return
 	}
