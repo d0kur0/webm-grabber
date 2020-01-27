@@ -16,7 +16,9 @@ var waitGroup sync.WaitGroup
 func catchingFilesChannel(output *types.Output) {
 	for {
 		message := <-channel
-		output.Push(&message)
+		if err := output.Push(&message); err != nil {
+			log.Println(errors.Wrap(err, "Push in output error"))
+		}
 	}
 }
 
@@ -25,7 +27,7 @@ func fetch(vendor types.Interface, thread types.Thread) {
 
 	files, err := vendor.FetchFiles(thread)
 	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("FetchFiles error, vendor: %s, thread: %d, board: %s", vendor.VendorName(), thread.ID, thread.Board.String()))
+		err = errors.Wrap(err, fmt.Sprintf("FetchFiles error, vendor: %s, thread: %d, board: %s", vendor.VendorName(), thread.ID, thread.Board.Name))
 		log.Println(err)
 		return
 	}
@@ -49,7 +51,7 @@ func GrabberProcess(grabberSchemas []types.GrabberSchema) types.Output {
 		for _, board := range schema.Boards {
 			threads, err := schema.Vendor.FetchThreads(board)
 			if err != nil {
-				err = errors.Wrap(err, fmt.Sprintf("FetchThreads error: vendor %s, board: %s", schema.Vendor.VendorName(), board.String()))
+				err = errors.Wrap(err, fmt.Sprintf("FetchThreads error: vendor %s, board: %s", schema.Vendor.VendorName(), board.Name))
 				log.Println(err)
 				continue
 			}

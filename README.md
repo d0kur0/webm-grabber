@@ -15,16 +15,22 @@ import (
 	"log"
 )
 
-func main () {
+func main() {
 	allowedExtension := types.AllowedExtensions{".webm", ".mp4"}
 	grabberSchema := []types.GrabberSchema{
 		{
 			twoChannel.Make(allowedExtension),
-			[]types.Board{"b", "h", "fur"},
+			[]types.Board{
+				{"b", "Бред"},
+				{"a", "Аниме"},
+			},
 		},
 		{
 			fourChannel.Make(allowedExtension),
-			[]types.Board{"b", "e", "h", "u"},
+			[]types.Board{
+				{"b", "Random"},
+				{"h", "Хентай"},
+			},
 		},
 	}
 

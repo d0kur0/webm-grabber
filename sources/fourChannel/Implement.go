@@ -39,7 +39,7 @@ func (vendor *implement) request(url string) (responseData []byte, err error) {
 }
 
 func (vendor *implement) FetchThreads(board types.Board) (threads []types.Thread, err error) {
-	response, err := vendor.request(vendor.basedAddress + "/" + board.String() + "/threads.json")
+	response, err := vendor.request(vendor.basedAddress + "/" + board.Name + "/threads.json")
 	if err != nil {
 		return
 	}
@@ -62,7 +62,7 @@ func (vendor *implement) FetchThreads(board types.Board) (threads []types.Thread
 }
 
 func (vendor *implement) FetchFiles(thread types.Thread) (files []types.File, err error) {
-	response, err := vendor.request(vendor.basedAddress + "/" + thread.Board.String() + "/res/" + thread.StringId() + ".json")
+	response, err := vendor.request(vendor.basedAddress + "/" + thread.Board.Name + "/res/" + thread.StringId() + ".json")
 	if err != nil {
 		return
 	}
@@ -79,8 +79,8 @@ func (vendor *implement) FetchFiles(thread types.Thread) (files []types.File, er
 
 		files = append(files, types.File{
 			Name:     post.Filename,
-			Path:     "https://i.4cdn.org/" + thread.Board.String() + "/" + fmt.Sprint(post.FileId) + post.FileExtension,
-			Preview:  "https://i.4cdn.org/" + thread.Board.String() + "/" + fmt.Sprint(post.FileId) + "s.png",
+			Path:     "https://i.4cdn.org/" + thread.Board.Name + "/" + fmt.Sprint(post.FileId) + post.FileExtension,
+			Preview:  "https://i.4cdn.org/" + thread.Board.Name + "/" + fmt.Sprint(post.FileId) + "s.png",
 			ThreadId: thread.ID,
 		})
 	}

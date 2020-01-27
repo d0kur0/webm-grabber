@@ -1,7 +1,6 @@
 package types
 
-type Board string
-
-func (board Board) String() string {
-	return string(board)
+type Board struct {
+	Name        string
+	Description string
 }

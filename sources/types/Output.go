@@ -1,26 +1,48 @@
 package types
 
-type outputVendors map[string]outputBoards
+import (
+	"errors"
+)
 
-type outputBoards map[string][]outputThread
+type outputVendors map[string][]outputBoard
+
+type outputBoard struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Threads     []outputThread
+}
 
 type outputThread struct {
-	Id    int
-	Files []File
+	Id    int    `json:"id"`
+	Files []File `json:"files"`
 }
 
 type Output struct {
-	Vendors outputVendors
+	Vendors outputVendors `json:"vendors"`
 }
 
-func (o *Output) Push(message *ChannelMessage) {
+func (o *Output) Push(message *ChannelMessage) error {
 	vendor := message.VendorName
-	board := message.Thread.Board.String()
+	board := message.Thread.Board.Name
 
-	o.Vendors[vendor][board] = append(o.Vendors[vendor][board], outputThread{
+	var desiredBoardIndex = -1
+	for vendorBoardIndex, vendorBoard := range o.Vendors[vendor] {
+		if vendorBoard.Name == board {
+			desiredBoardIndex = vendorBoardIndex
+			break
+		}
+	}
+
+	if desiredBoardIndex == -1 {
+		return errors.New("board not found")
+	}
+
+	o.Vendors[vendor][desiredBoardIndex].Threads = append(o.Vendors[vendor][desiredBoardIndex].Threads, outputThread{
 		Id:    message.Thread.ID,
 		Files: message.Files,
 	})
+
+	return nil
 }
 
 func MakeOutput(schemas []GrabberSchema) (o Output) {
@@ -28,10 +50,14 @@ func MakeOutput(schemas []GrabberSchema) (o Output) {
 	o.Vendors = make(outputVendors, len(schemas))
 
 	for _, schema := range schemas {
-		var boards = make(outputBoards, len(schema.Boards))
+		var boards []outputBoard
 
 		for _, board := range schema.Boards {
-			boards[board.String()] = []outputThread{}
+			boards = append(boards, outputBoard{
+				Name:        board.Name,
+				Description: board.Description,
+				Threads:     []outputThread{},
+			})
 		}
 
 		o.Vendors[schema.Vendor.VendorName()] = boards
