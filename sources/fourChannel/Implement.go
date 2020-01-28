@@ -80,7 +80,7 @@ func (vendor *implement) FetchFiles(thread types.Thread) (files []types.File, er
 		files = append(files, types.File{
 			Name:     post.Filename,
 			Path:     "https://i.4cdn.org/" + thread.Board.Name + "/" + fmt.Sprint(post.FileId) + post.FileExtension,
-			Preview:  "https://i.4cdn.org/" + thread.Board.Name + "/" + fmt.Sprint(post.FileId) + "s.png",
+			Preview:  "https://i.4cdn.org/" + thread.Board.Name + "/" + fmt.Sprint(post.FileId) + "s.jpg",
 			ThreadId: thread.ID,
 		})
 	}
