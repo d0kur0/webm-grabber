@@ -1,8 +1,8 @@
 package types
 
 type File struct {
-	Name     string
-	Path     string
-	Preview  string
-	ThreadId int
+	Name     string `json:"name"`
+	Path     string `json:"path"`
+	Preview  string `json:"preview"`
+	ThreadId int    `json:"threadId"`
 }
