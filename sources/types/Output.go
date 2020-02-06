@@ -7,9 +7,9 @@ import (
 type OutputVendors map[string][]OutputBoard
 
 type OutputBoard struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Threads     []OutputThread
+	Name        string         `json:"name"`
+	Description string         `json:"description"`
+	Threads     []OutputThread `json:"threads"`
 }
 
 type OutputThread struct {
