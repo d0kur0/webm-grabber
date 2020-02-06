@@ -4,21 +4,21 @@ import (
 	"errors"
 )
 
-type outputVendors map[string][]outputBoard
+type OutputVendors map[string][]OutputBoard
 
-type outputBoard struct {
+type OutputBoard struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
-	Threads     []outputThread
+	Threads     []OutputThread
 }
 
-type outputThread struct {
+type OutputThread struct {
 	Id    int    `json:"id"`
 	Files []File `json:"files"`
 }
 
 type Output struct {
-	Vendors outputVendors `json:"vendors"`
+	Vendors OutputVendors `json:"vendors"`
 }
 
 func (o *Output) Push(message *ChannelMessage) error {
@@ -37,7 +37,7 @@ func (o *Output) Push(message *ChannelMessage) error {
 		return errors.New("board not found")
 	}
 
-	o.Vendors[vendor][desiredBoardIndex].Threads = append(o.Vendors[vendor][desiredBoardIndex].Threads, outputThread{
+	o.Vendors[vendor][desiredBoardIndex].Threads = append(o.Vendors[vendor][desiredBoardIndex].Threads, OutputThread{
 		Id:    message.Thread.ID,
 		Files: message.Files,
 	})
@@ -47,16 +47,16 @@ func (o *Output) Push(message *ChannelMessage) error {
 
 func MakeOutput(schemas []GrabberSchema) (o Output) {
 	o = Output{}
-	o.Vendors = make(outputVendors, len(schemas))
+	o.Vendors = make(OutputVendors, len(schemas))
 
 	for _, schema := range schemas {
-		var boards []outputBoard
+		var boards []OutputBoard
 
 		for _, board := range schema.Boards {
-			boards = append(boards, outputBoard{
+			boards = append(boards, OutputBoard{
 				Name:        board.Name,
 				Description: board.Description,
-				Threads:     []outputThread{},
+				Threads:     []OutputThread{},
 			})
 		}
 
