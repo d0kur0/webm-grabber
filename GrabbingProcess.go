@@ -4,13 +4,11 @@ import (
 	"fmt"
 	"log"
 	"sync"
-
 	"github.com/pkg/errors"
-
 	"github.com/d0kur0/webm-grabber/sources/types"
 )
 
-var channel = make(chan types.ChannelMessage)
+var channel chan types.ChannelMessage
 var waitGroup sync.WaitGroup
 
 func catchingFilesChannel(output *types.Output) {
@@ -44,6 +42,8 @@ func fetch(vendor types.Interface, thread types.Thread) {
 }
 
 func GrabberProcess(grabberSchemas []types.GrabberSchema) types.Output {
+
+	channel = make(chan types.ChannelMessage)
 	output := types.MakeOutput(grabberSchemas)
 	go catchingFilesChannel(&output)
 
@@ -63,7 +63,17 @@ func GrabberProcess(grabberSchemas []types.GrabberSchema) types.Output {
 		}
 	}
 
-	waitGroup.Wait()
+	var counter int
+	for _, vendor := range output.Vendors {
+		for _, board := range vendor {
+			for _, thread := range board.Threads {
+				counter = counter + len(thread.Files)
+			}
+		}
+	}
+	log.Println("Files", counter)
 
+
+	waitGroup.Wait()
 	return output
 }
