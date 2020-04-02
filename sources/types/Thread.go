@@ -5,7 +5,7 @@ import (
 )
 
 type Thread struct {
-	ID    int
+	ID    int64
 	Board Board
 }
 

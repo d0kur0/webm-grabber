@@ -2,6 +2,6 @@ package fourChannel
 
 type ResponseThreads []struct {
 	Threads []struct {
-		Id int `json:"no"`
+		Id int64 `json:"no"`
 	}
 }
