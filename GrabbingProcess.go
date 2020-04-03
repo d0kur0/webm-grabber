@@ -63,17 +63,6 @@ func GrabberProcess(grabberSchemas []types.GrabberSchema) types.Output {
 		}
 	}
 
-	var counter int
-	for _, vendor := range output.Vendors {
-		for _, board := range vendor {
-			for _, thread := range board.Threads {
-				counter = counter + len(thread.Files)
-			}
-		}
-	}
-	log.Println("Files", counter)
-
-
 	waitGroup.Wait()
 	return output
 }
