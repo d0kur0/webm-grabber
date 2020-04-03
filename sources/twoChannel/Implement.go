@@ -60,7 +60,7 @@ func (vendor *implement) FetchThreads(board types.Board) (threads []types.Thread
 	}
 
 	for _, thread := range responseThreads.Threads {
-		threadId, convertError := strconv.Atoi(thread.Id)
+		threadId, convertError := strconv.ParseInt(thread.Id, 10, 64)
 		if convertError != nil {
 			continue
 		}
