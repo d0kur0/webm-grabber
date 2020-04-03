@@ -2,10 +2,10 @@ package webmGrabber
 
 import (
 	"fmt"
+	"github.com/d0kur0/webm-grabber/sources/types"
+	"github.com/pkg/errors"
 	"log"
 	"sync"
-	"github.com/pkg/errors"
-	"github.com/d0kur0/webm-grabber/sources/types"
 )
 
 var channel chan types.ChannelMessage
