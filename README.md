@@ -1,6 +1,6 @@
 # webm-grabber
 Гибкая в настройке утилита для граббинга файлов в тредах на имиджбордах 
-На данный момент реализовано 2 вендора: _2ch.hk_ и _4chan.org_, но вы можете без проблем реализовать любые другие, всё, что для этого нужно - имплементировать [интерфейс вендора](https://github.com/d0kur0/webm-grabber/blob/master/sources/types/Interface.go).
+На данный момент реализовано 2 вендора: _2ch.hk_ и _4chan.org_, но вы можете без проблем реализовать любые другие, всё, что для этого нужно - имплементировать [интерфейс вендора](https://github.com/d0kur0/webm-grabber/blob/master/types/vendor_interface.go).
 
 ## Пример использования
 
@@ -11,7 +11,7 @@ import (
 	webmGrabber "github.com/d0kur0/webm-grabber"
 	"github.com/d0kur0/webm-grabber/sources/fourChannel"
 	"github.com/d0kur0/webm-grabber/sources/twoChannel"
-	"github.com/d0kur0/webm-grabber/sources/types"
+	"github.com/d0kur0/webm-grabber/types"
 	"log"
 )
 
@@ -39,4 +39,4 @@ func main() {
 }
 ```
 
-Результатом будет заполненная структура [Output](https://github.com/d0kur0/webm-grabber/blob/master/sources/types/Output.go), которая будет выведена в консоль.
+Результатом будет заполненная структура [Output](https://github.com/d0kur0/webm-grabber/blob/master/types/output.go), которая будет выведена в консоль.
