@@ -1,14 +1,9 @@
-//package webmGrabber
-package main
+package webmGrabber
 
 import (
 	"fmt"
 	"log"
 	"sync"
-
-	"github.com/d0kur0/webm-grabber/internal/twoChannel"
-
-	"github.com/davecgh/go-spew/spew"
 
 	"github.com/d0kur0/webm-grabber/types"
 	"github.com/pkg/errors"
@@ -77,15 +72,4 @@ func GrabberProcess(grabberSchemas []types.GrabberSchema) (output types.Output) 
 
 	waitGroup.Wait()
 	return output
-}
-
-func main() {
-	output := GrabberProcess([]types.GrabberSchema{
-		{
-			Vendor: twoChannel.Make(types.AllowedExtensions{".mp4", ".webm"}),
-			Boards: []types.Board{{"b", "bread"}},
-		},
-	})
-
-	spew.Dump(output)
 }
