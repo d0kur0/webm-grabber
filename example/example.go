@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
+
 	webmGrabber "github.com/d0kur0/webm-grabber"
 	"github.com/d0kur0/webm-grabber/types"
 	"github.com/d0kur0/webm-grabber/vendors/fourChannel"
 )
 
-func main () {
+func main() {
 	allowedExtensions := types.AllowedExtensions{".mp4", ".webm"}
 
 	grabberSchema := []types.GrabberSchema{
