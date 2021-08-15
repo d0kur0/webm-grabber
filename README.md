@@ -4,39 +4,6 @@
 
 ## Пример использования
 
-```go
-package main
-
-import (
-	webmGrabber "github.com/d0kur0/webm-grabber"
-	"github.com/d0kur0/webm-grabber/sources/fourChannel"
-	"github.com/d0kur0/webm-grabber/sources/twoChannel"
-	"github.com/d0kur0/webm-grabber/types"
-	"log"
-)
-
-func main() {
-	allowedExtension := types.AllowedExtensions{".webm", ".mp4"}
-	grabberSchema := []types.GrabberSchema{
-		{
-			twoChannel.Make(allowedExtension),
-			[]types.Board{
-				{"b", "Бред"},
-				{"a", "Аниме"},
-			},
-		},
-		{
-			fourChannel.Make(allowedExtension),
-			[]types.Board{
-				{"b", "Random"},
-				{"h", "Хентай"},
-			},
-		},
-	}
-
-	files := webmGrabber.GrabberProcess(grabberSchema)
-	log.Println(files)
-}
-```
+Пример можно посмотреть в папке [examples](https://github.com/d0kur0/webm-grabber/blob/master/examples).
 
 Результатом будет заполненная структура [Output](https://github.com/d0kur0/webm-grabber/blob/master/types/output.go), которая будет выведена в консоль.
