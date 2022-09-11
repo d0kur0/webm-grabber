@@ -14,6 +14,7 @@ type ResponsePosts struct {
 
 type ResponseThreads struct {
 	Threads []struct {
-		Id string `json:"num"`
+		Id int64 `json:"num"`
 	}
 }
+

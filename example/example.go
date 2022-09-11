@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
+	"github.com/d0kur0/webm-grabber/vendors/fourChannel"
+	"github.com/d0kur0/webm-grabber/vendors/twoChannel"
 
 	webmGrabber "github.com/d0kur0/webm-grabber"
 	"github.com/d0kur0/webm-grabber/types"
-	"github.com/d0kur0/webm-grabber/vendors/fourChannel"
 )
 
 func main() {
@@ -13,7 +14,7 @@ func main() {
 
 	grabberSchema := []types.GrabberSchema{
 		{
-			Vendor: fourChannel.Make(allowedExtensions),
+			Vendor: twoChannel.Make(allowedExtensions),
 			Boards: []types.Board{
 				{"b", "Бред"},
 				{"media", "Media"},
@@ -22,7 +23,7 @@ func main() {
 		{
 			Vendor: fourChannel.Make(allowedExtensions),
 			Boards: []types.Board{
-				{"b", "Random"},
+				{"b", "Бред"},
 			},
 		},
 	}

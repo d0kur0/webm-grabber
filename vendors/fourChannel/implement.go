@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 
 	"github.com/d0kur0/webm-grabber/types"
@@ -25,10 +24,7 @@ func (vendor *fourChannel) request(url string) (responseData []byte, err error) 
 	}
 
 	defer func() {
-		err = response.Body.Close()
-		if err != nil {
-			log.Println(errors.Wrap(err, "Closing body error"))
-		}
+		_ = response.Body.Close()
 	}()
 
 	if response.StatusCode < 200 || response.StatusCode > 299 {

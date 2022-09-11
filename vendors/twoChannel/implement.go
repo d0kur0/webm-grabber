@@ -3,14 +3,11 @@ package twoChannel
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"log"
-	"net/http"
-	"path/filepath"
-	"strconv"
-
 	"github.com/d0kur0/webm-grabber/types"
 	"github.com/pkg/errors"
+	"io/ioutil"
+	"net/http"
+	"path/filepath"
 )
 
 type twoChannel struct {
@@ -40,10 +37,7 @@ func (vendor *twoChannel) request(url string) (responseData []byte, err error) {
 	}
 
 	defer func() {
-		err = response.Body.Close()
-		if err != nil {
-			log.Println(errors.Wrap(err, "Closing body error"))
-		}
+		_ = response.Body.Close()
 	}()
 
 	return ioutil.ReadAll(response.Body)
@@ -62,13 +56,8 @@ func (vendor *twoChannel) FetchThreads(board types.Board) (threads []types.Threa
 	}
 
 	for _, thread := range responseThreads.Threads {
-		threadId, convertError := strconv.ParseInt(thread.Id, 10, 64)
-		if convertError != nil {
-			continue
-		}
-
 		threads = append(threads, types.Thread{
-			ID:    threadId,
+			ID:    thread.Id,
 			Board: board,
 		})
 	}
