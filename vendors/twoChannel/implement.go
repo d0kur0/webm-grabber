@@ -17,6 +17,8 @@ type twoChannel struct {
 	authToken         string
 }
 
+const VendorName = "2ch"
+
 func (vendor *twoChannel) request(url string) (responseData []byte, err error) {
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -100,7 +102,7 @@ func (vendor *twoChannel) FetchFiles(thread types.Thread) (files []types.File, e
 }
 
 func (vendor *twoChannel) VendorName() string {
-	return "2ch"
+	return VendorName
 }
 
 func (vendor *twoChannel) GetThreadUrl(thread types.Thread) string {

@@ -17,6 +17,8 @@ type fourChannel struct {
 	allowedExtensions types.AllowedExtensions
 }
 
+const VendorName = "4chan"
+
 func (vendor *fourChannel) request(url string) (responseData []byte, err error) {
 	response, err := http.Get(url)
 	if err != nil {
@@ -88,7 +90,7 @@ func (vendor *fourChannel) FetchFiles(thread types.Thread) (files []types.File, 
 }
 
 func (vendor *fourChannel) VendorName() string {
-	return "4chan"
+	return VendorName
 }
 
 func (vendor *fourChannel) GetThreadUrl(thread types.Thread) string {
