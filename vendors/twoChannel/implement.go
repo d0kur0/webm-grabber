@@ -80,7 +80,7 @@ func (vendor *twoChannel) FetchFiles(thread types.Thread) (files []types.File, e
 	}
 
 	for _, post := range responsePosts.Threads[0].Posts {
-		if post.Files == nil {
+		if len(post.Files) == 0 {
 			continue
 		}
 
@@ -91,8 +91,8 @@ func (vendor *twoChannel) FetchFiles(thread types.Thread) (files []types.File, e
 
 			files = append(files, types.File{
 				Name:     file.Name,
-				Path:     fmt.Sprintf("https://%s/%s", vendor.CDNBaseAddress, file.Path),
-				Preview:  fmt.Sprintf("https://%s/%s", vendor.CDNBaseAddress, file.Preview),
+				Path:     fmt.Sprintf("https://%s%s", vendor.CDNBaseAddress, file.Path),
+				Preview:  fmt.Sprintf("https://%s%s", vendor.CDNBaseAddress, file.Preview),
 				ThreadId: thread.ID,
 			})
 		}

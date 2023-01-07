@@ -20,7 +20,7 @@ func catchingFilesChannel(output *types.Output) {
 				VendorName:   message.VendorName,
 				BoardName:    message.Thread.Board.Name,
 				SourceThread: message.SourceThread,
-				File:         &file,
+				File:         file,
 			}
 
 			*output = append(*output, item)
