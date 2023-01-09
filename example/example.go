@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
+	webmGrabber "github.com/d0kur0/webm-grabber"
 	"github.com/d0kur0/webm-grabber/vendors/fourChannel"
 	"github.com/d0kur0/webm-grabber/vendors/twoChannel"
+	"time"
 
-	webmGrabber "github.com/d0kur0/webm-grabber"
 	"github.com/d0kur0/webm-grabber/types"
 )
 
@@ -29,6 +30,10 @@ func main() {
 	}
 
 	result := webmGrabber.GrabberProcess(grabberSchema)
+	for i := 1; i < 10; i++ {
+		result = webmGrabber.GrabberProcess(grabberSchema)
+		time.Sleep(5 * time.Second)
+	}
 
 	for _, item := range result {
 		fmt.Printf("Vendor: %s; Board: %s; Thread URL: %s \n", item.VendorName, item.BoardName, item.SourceThread)

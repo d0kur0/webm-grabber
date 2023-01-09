@@ -10,20 +10,25 @@ import (
 )
 
 var channel chan types.ChannelMessage
+var done chan bool
 var waitGroup sync.WaitGroup
 
 func catchingFilesChannel(output *types.Output) {
 	for {
-		message := <-channel
-		for _, file := range message.Files {
-			item := types.OutputItem{
-				VendorName:   message.VendorName,
-				BoardName:    message.Thread.Board.Name,
-				SourceThread: message.SourceThread,
-				File:         file,
-			}
+		select {
+		case message := <-channel:
+			for _, file := range message.Files {
+				item := types.OutputItem{
+					VendorName:   message.VendorName,
+					BoardName:    message.Thread.Board.Name,
+					SourceThread: message.SourceThread,
+					File:         file,
+				}
 
-			*output = append(*output, item)
+				*output = append(*output, item)
+			}
+		case <-done:
+			return
 		}
 	}
 }
@@ -51,6 +56,8 @@ func fetch(vendor types.VendorInterface, thread types.Thread) {
 
 func GrabberProcess(grabberSchemas []types.GrabberSchema) (output types.Output) {
 	channel = make(chan types.ChannelMessage)
+	done = make(chan bool)
+
 	go catchingFilesChannel(&output)
 
 	for _, schema := range grabberSchemas {
@@ -70,5 +77,6 @@ func GrabberProcess(grabberSchemas []types.GrabberSchema) (output types.Output) 
 	}
 
 	waitGroup.Wait()
+	done <- true
 	return output
 }
